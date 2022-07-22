@@ -102,17 +102,17 @@ r2 = sklearn.metrics.r2_score(x_true, sol)
 
 # PLOTS
 plt.figure(1)
-plt.plot(time, sol[:, 0])
-plt.plot(time, sol[:, 1])
+plt.plot(time, sol[:, 0], label='Showshoe Hare')
+plt.plot(time, sol[:, 1], label='Canadian Lynx')
 plt.xlabel('time')
 plt.ylabel('population')
 plt.title("Lotka-Volterra Approximation")
+plt.legend()
 plt.grid()
 
 
 # SINDY
 n_of_iterations = 500
-BAG = True
 feature_names = ['x','y','x^2','y^2','xy','1/x','1/y','1/x^2','1/y^2','x^3','y^3','x^4','y^4']
 t_train = time[:n]
 t_train.sort()
@@ -120,41 +120,25 @@ ensemble_coeffs_list = []
 ensemble_optimizer = ps.STLSQ(threshold=0.00005, alpha=0.5, max_iter=2000)
 model3 = ps.SINDy(feature_names=feature_names, optimizer=ensemble_optimizer)
 
-if not BAG: 
-    for idx in range(0, n_of_iterations):
-        model3.fit(x=xdata.transpose(), t=dT, ensemble=True, replace=False, quiet=True)
-        ensemble_coeffs_list.append(model3.coef_list)
-    ensemble_coeffs = np.asarray(ensemble_coeffs_list)
-    mean_ensemble_coefs = np.mean(ensemble_coeffs, axis=0)
-    Mmean_ensemble_coefs = np.mean(mean_ensemble_coefs, axis=0)
-    ensemble_optimizer.coef_ = Mmean_ensemble_coefs
-    x_sim_mean = model3.simulate(xdata[:, 0], time)
-
-
-# BAGGING SINDY
-if BAG:
-    for idx in range(0, n_of_iterations):
-        x_train_bag, time_bag = bagging(X=xdata, p=10, time=time)
-        model3.fit(x=x_train_bag.transpose(), t=dT, ensemble=True, replace=False, quiet=True)
-        coeff_tmp = np.asarray(model3.coef_list)
-        ensemble_coeffs_list.append(coeff_tmp)
-    ensemble_coeffs = np.asarray(ensemble_coeffs_list)
-    mean_ensemble_coefs = np.mean(ensemble_coeffs, axis=0)
-    Mmean_ensemble_coefs = np.mean(mean_ensemble_coefs, axis=0)
-    ensemble_optimizer.coef_ = Mmean_ensemble_coefs
-    x_sim_mean = model3.simulate(xdata[:, 0], time)
+for idx in range(0, n_of_iterations):
+    model3.fit(x=xdata.transpose(), t=dT, ensemble=True, replace=False, quiet=True)
+    ensemble_coeffs_list.append(model3.coef_list)
+ensemble_coeffs = np.asarray(ensemble_coeffs_list)
+mean_ensemble_coefs = np.mean(ensemble_coeffs, axis=0)
+Mmean_ensemble_coefs = np.mean(mean_ensemble_coefs, axis=0)
+ensemble_optimizer.coef_ = Mmean_ensemble_coefs
+x_sim_mean = model3.simulate(xdata[:, 0], time)
 
 lib_functions = model3.get_feature_names()
 model3.print()
 
 plt.figure(4)
-plt.plot(time, x_sim_mean[:, 0], '-.', color='r')
-plt.plot(time, sol[:, 0], color='r')
-plt.plot(time, x_sim_mean[:, 1], '-.', color='b')
-plt.plot(time, sol[:, 1], color='b')
+plt.plot(time, x_sim_mean[:, 0], label='Showshoe Hare') 
+plt.plot(time, x_sim_mean[:, 1], label='Canadian Lynx') 
 plt.xlabel('time')
 plt.ylabel('population')
 plt.title("SINDy simulated response")
+plt.legend()
 plt.grid()
 
 plt.show()

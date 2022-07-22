@@ -104,7 +104,7 @@ time = np.asarray(year[:-1] - year[0])
 time_idx = np.arange(0, 29)
 dT = time[1] - time[0]
 
-DELAY = False    # Set True for Delay DMDs, False for others
+DELAY = True    # Set True for Delay DMDs, False for others
 
 
 if not DELAY:
@@ -210,27 +210,39 @@ if DELAY:
 # PLOTS
 if not DELAY:
     plt.figure(1)
-    plt.plot(time, SH_dmd)
-    plt.plot(time, CL_dmd)
-    plt.title('Exact DMD')
+    plt.plot(year, SH, label='Showshoe Hare')
+    plt.plot(year, CL, label='Canadian Lynx')
+    plt.title('Population Data')
     plt.xlabel('time')
     plt.ylabel('population')
+    plt.legend()
     plt.grid()
 
     plt.figure(2)
-    plt.plot(time, x_bop[0, :])
-    plt.plot(time, x_bop[1, :])
+    plt.plot(time, SH_dmd, label='Showshoe Hare')
+    plt.plot(time, CL_dmd, label='Canadian Lynx')
+    plt.title('Exact DMD')
+    plt.xlabel('time')
+    plt.ylabel('population')
+    plt.legend()
+    plt.grid()
+
+    plt.figure(3)
+    plt.plot(time, x_bop[0, :], label='Showshoe Hare')
+    plt.plot(time, x_bop[1, :], label='Canadian Lynx')
     plt.title('Bagging Optimal DMD')
     plt.xlabel('time')
     plt.ylabel('population')
+    plt.legend()
     plt.grid()
 
 if DELAY:
     plt.figure(4)
-    plt.plot(time, x_del_dmd[0, :])
-    plt.plot(time, x_del_dmd[1, :])
+    plt.plot(time, x_del_dmd[0, :], label='Showshoe Hare')
+    plt.plot(time, x_del_dmd[1, :], label='Canadian Lynx')
     plt.xlabel('time')
     plt.ylabel('population')
+    plt.legend()
     plt.grid()
 
     plt.figure(5)
@@ -240,10 +252,11 @@ if DELAY:
     plt.grid()
 
     plt.figure(6)
-    plt.plot(time, x_bop_del[0, :])
-    plt.plot(time, x_bop_del[1, :])
+    plt.plot(time, x_bop_del[0, :], label='Showshoe Hare')
+    plt.plot(time, x_bop_del[1, :], label='Canadian Lynx')
     plt.xlabel('time')
     plt.ylabel('population')
+    plt.legend()
     plt.grid()
 
 plt.show()
